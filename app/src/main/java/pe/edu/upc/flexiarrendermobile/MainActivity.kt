@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import pe.edu.upc.flexiarrendermobile.ui.home.Home
 import pe.edu.upc.flexiarrendermobile.ui.theme.FlexiArrenderMobileTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,7 +23,13 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    //var requestSignUpArrender: RequestSignUpArrender? =null
+
+                   // if (requestSignUpArrender != null) {
+                        Home()
+                    //} else {
+                       // Text("Hello, FlexiArrenderMobile!")
+                  //  }
                 }
             }
         }
