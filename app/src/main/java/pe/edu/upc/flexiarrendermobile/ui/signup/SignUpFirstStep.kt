@@ -40,11 +40,6 @@ fun SignUpSignUpFirstStep(
     //El body es un contenedor que nos permite tener un contenido principal
 
 
-    // En tu composable Home
-
-
-
-
     val confirmPassword = remember {
         mutableStateOf("")
     }

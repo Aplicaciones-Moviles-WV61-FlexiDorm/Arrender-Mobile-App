@@ -111,6 +111,8 @@ fun RoomDetail(errorMessageModel: MutableState<String?>, finishAddRoom:()->Unit)
 
                 println( "Body:+$body")
 
+                println( "Token en detail: ${dataLocalArrender[0].token}")
+
                 val roomRepositoryFactory= RoomRepositoryFactory.getRoomRepositoryFactory(dataLocalArrender[0].token)
 
                 roomRepositoryFactory.registerRoom(body){apiResponse, errorCode, errorBody ->
@@ -118,6 +120,7 @@ fun RoomDetail(errorMessageModel: MutableState<String?>, finishAddRoom:()->Unit)
                         println(
                             "Código de estado: $errorCode, Cuerpo de la respuesta: $apiResponse"
                         )
+                        finishAddRoom()
                     }else{
                         println(
                             "Código de estado: $errorCode, Cuerpo de la respuesta: $errorBody"
@@ -125,7 +128,7 @@ fun RoomDetail(errorMessageModel: MutableState<String?>, finishAddRoom:()->Unit)
                     }
                 }
 
-                finishAddRoom()
+
 
 
 
