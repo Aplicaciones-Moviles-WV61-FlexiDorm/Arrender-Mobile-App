@@ -5,6 +5,8 @@ import pe.edu.upc.flexiarrendermobile.model.data.ApiResponse
 import pe.edu.upc.flexiarrendermobile.model.data.Arrender
 import pe.edu.upc.flexiarrendermobile.model.data.RequestSignInArrenderBody
 import pe.edu.upc.flexiarrendermobile.model.data.RequestSignUpArrenderBody
+import pe.edu.upc.flexiarrendermobile.model.local.ArrenderDao
+import pe.edu.upc.flexiarrendermobile.model.local.ArrenderEntity
 import pe.edu.upc.flexiarrendermobile.model.remote.ArrenderService
 import retrofit2.Call
 import retrofit2.Callback
@@ -12,7 +14,8 @@ import retrofit2.HttpException
 import retrofit2.Response
 
 class ArrenderRepository(
-    private val arrenderService:ArrenderService
+    private val arrenderService:ArrenderService,
+    private val arrenderDao: ArrenderDao
 ) {
 
     fun signUpArrender(requestSignUpArrenderBody: RequestSignUpArrenderBody, callback: (ApiResponse?, Int?, String?) -> Unit) {
@@ -91,4 +94,40 @@ class ArrenderRepository(
         })
     }
 
+
+
+    fun insertArrenderDataLocal(arrender: Arrender){
+        arrenderDao.insert(
+            ArrenderEntity(
+                arrender.userId.toString(),
+                arrender.username,
+                arrender.firstname,
+                arrender.lastname,
+                arrender.phoneNumber,
+                arrender.email,
+                arrender.address,
+                arrender.birthDate,
+                arrender.profilePicture,
+                arrender.gender,
+                arrender.token,
+                arrender.verifier
+               )
+        )
+    }
+
+    fun deleteArrenderDataLocal(id: String ){
+        arrenderDao.deleteById(id)
+    }
+
+    fun getArrenderDataLocal(id:String):ArrenderEntity?{
+        return arrenderDao.getArrenderById(id)
+    }
+
+    fun getArrender():List<ArrenderEntity>{
+        return arrenderDao.getArrender()
+    }
+
+    fun getToken(id:String):String{
+        return arrenderDao.getToken(id)
+    }
 }

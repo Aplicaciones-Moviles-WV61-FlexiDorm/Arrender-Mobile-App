@@ -27,7 +27,7 @@ import pe.edu.upc.flexiarrendermobile.model.data.RequestSignInArrenderState
 import pe.edu.upc.flexiarrendermobile.shared.MessageError
 
 @Composable
-fun SignIn(errorMessageModel: MutableState<String?>, sinUpFirstStep:()->Unit ){
+fun SignIn(errorMessageModel: MutableState<String?>, sinUpFirstStep:()->Unit, signInSuccessful:()->Unit) {
 
     val email = remember{
         mutableStateOf("")
@@ -89,10 +89,46 @@ fun SignIn(errorMessageModel: MutableState<String?>, sinUpFirstStep:()->Unit ){
                             password = requestSignInArrenderState.password.value
                         )
 
-                        val arrenderRepository= ArrenderRepositoryFactory.getArrenderRepository()
+                        val arrenderRepository= ArrenderRepositoryFactory.getArrenderRepository("")
+
 
                         arrenderRepository.signInArrender(body){apiResponse, errorCode, errorBody ->
                             if (apiResponse != null) {
+
+                                //arrenderRepository.insertArrenderDataLocal()
+                                println(
+                                    "Código de estado: $errorCode, Cuerpo de la respuesta: $apiResponse"
+                                )
+
+                                var arrenderEntity = apiResponse.data
+
+                                println(
+                                    "ArrenderEntity: $arrenderEntity"
+                                )
+
+                                //Guardar la data en la base de datos local
+                                //arrenderRepository.insertArrenderDataLocal(
+                               //     arrenderEntity
+                                //)
+                                //verificar que no haya un arrender en la base de datos local
+                                //si no hay, guardar el arrender en la base de datos local
+                                println( "En la base de datos hay :"+ arrenderRepository.getArrenderDataLocal(arrenderEntity.userId.toString()))
+                                if(arrenderRepository.getArrenderDataLocal(arrenderEntity.userId.toString())==null){
+
+                                    arrenderRepository.insertArrenderDataLocal(
+                                        arrenderEntity
+                                    )
+
+                                    println("Se guardo el arrender en la base de datos local")
+                                    signInSuccessful()
+
+                                }else{
+                                    //si ya hay un arrender en la base de datos local , limpiar la base de datos local
+                                    arrenderRepository.deleteArrenderDataLocal( arrenderEntity.userId.toString())
+                                    println("Se limpio la base de datos local")
+                                }
+
+
 
                                 //navegar a la vista de listado de habitaciones
                             } else {

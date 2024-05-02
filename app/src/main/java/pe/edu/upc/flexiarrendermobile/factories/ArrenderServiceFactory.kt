@@ -6,9 +6,9 @@ class ArrenderServiceFactory {
 
     companion object {
         private var arrenderService: ArrenderService? = null
-        fun getArrenderService(): ArrenderService {
+        fun getArrenderService(token:String): ArrenderService {
             if (arrenderService == null) {
-                arrenderService = RetrofitFactory.getRetrofit().create(ArrenderService::class.java)
+                arrenderService = RetrofitFactory.getRetrofit(token).create(ArrenderService::class.java)
             }
             return arrenderService as ArrenderService
         }

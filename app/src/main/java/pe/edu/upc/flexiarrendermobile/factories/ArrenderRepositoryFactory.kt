@@ -7,10 +7,11 @@ class ArrenderRepositoryFactory {
     companion object {
         private var arrenderRepository: ArrenderRepository? = null
 
-        fun getArrenderRepository(): ArrenderRepository {
+        fun getArrenderRepository(token:String): ArrenderRepository {
             if (arrenderRepository == null) {
                 arrenderRepository = ArrenderRepository(
-                    arrenderService = ArrenderServiceFactory.getArrenderService()
+                    arrenderService = ArrenderServiceFactory.getArrenderService(token),
+                    arrenderDao = ArrenderDaoFactory.getArrenderDao()
                 )
             }
             return arrenderRepository as ArrenderRepository

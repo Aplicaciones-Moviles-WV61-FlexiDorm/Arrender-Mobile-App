@@ -15,7 +15,7 @@ data class ArrenderEntity(
     val address: String,
     val birthDate: String,
     val profilePicture: String,
-    val gender: String,
+    val gender: String?,
     val token:String,
     val verifier: Boolean,
 )

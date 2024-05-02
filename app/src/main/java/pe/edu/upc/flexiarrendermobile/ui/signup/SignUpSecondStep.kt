@@ -257,7 +257,7 @@ fun SignUpSecondStep(
 
 
                         //Aca se manda al backend
-                        val arrenderRepository= ArrenderRepositoryFactory.getArrenderRepository()
+                        val arrenderRepository= ArrenderRepositoryFactory.getArrenderRepository("")
 
                         arrenderRepository.signUpArrender(body) { apiResponse, errorCode, errorBody ->
                             // Manejar la respuesta exitosa o el error aquí
