@@ -8,11 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 
 @Composable
-fun MessageError(errorMessageModel: MutableState<String?>){
+fun MessageError(errorMessageModel: MutableState<String?>, errorTitle:String){
     errorMessageModel.value?.let { message ->
         AlertDialog(
             onDismissRequest = { errorMessageModel.value = null },
-            title = { Text("Error") },
+            title = { Text(errorTitle) },
             text = { Text(message) },
             confirmButton = {
                 Button(onClick = { errorMessageModel.value = null }) {

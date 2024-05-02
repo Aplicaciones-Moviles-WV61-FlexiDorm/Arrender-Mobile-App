@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object ApiClient {
 
     //Define the base URL
-    const val BASE_URL="https://flexidorms-latest.onrender.com/"
+    const val BASE_URL="https://flexidorms-latest.onrender.com/api/v1/"
 
     //Create a function to get the Retrofit instance
     fun getRetrofit(): Retrofit {

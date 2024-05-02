@@ -6,8 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import pe.edu.upc.flexiarrendermobile.model.data.RequestSignUpArrender
+import pe.edu.upc.flexiarrendermobile.model.data.RequestSignUpArrenderState
+import pe.edu.upc.flexiarrendermobile.ui.room.roomlist.RoomList
+import pe.edu.upc.flexiarrendermobile.ui.signin.SignIn
 import pe.edu.upc.flexiarrendermobile.ui.signup.SignUpSecondStep
 import pe.edu.upc.flexiarrendermobile.ui.signup.SignUpSignUpFirstStep
 
@@ -19,7 +22,7 @@ fun Home(){
 
 
     //request sign up
-    val requestSignUpArrender = RequestSignUpArrender()
+    val requestSignUpArrender = RequestSignUpArrenderState()
 
     val errorMessage = remember { mutableStateOf<String?>(null) }
 
@@ -31,18 +34,40 @@ fun Home(){
 
 
 
-    NavHost(navController = navController, startDestination=Routes.SignUpFirstStep.route){
+    NavHost(navController = navController, startDestination=Routes.SignIn.route){
         composable(Routes.SignUpFirstStep.route){
-            SignUpSignUpFirstStep(requestSignUpArrender,errorMessage){
-
-                navController.navigate(Routes.SignUpSecondStep.route)
-            }
+            SignUpSignUpFirstStep(
+                requestSignUpArrender,
+                errorMessage,
+                secontStep= {
+                    navController.navigate(Routes.SignUpSecondStep.route) },
+                signInStep = {
+                    navController.navigate(Routes.SignIn.route)}
+            )
         }
 
+
         composable(Routes.SignUpSecondStep.route){
-            SignUpSecondStep( requestSignUpArrender,errorMessage,pressOnBack={
-                navController.popBackStack()
+            SignUpSecondStep(
+                requestSignUpArrender,
+                errorMessage,
+                pressOnBack={
+                navController.popBackStack() },
+                navigationToSignIn={
+                    navController.navigate(Routes.SignIn.route)
+                }
+
+            )
+        }
+
+        composable(Routes.SignIn.route){
+            SignIn(errorMessage,sinUpFirstStep={
+                navController.navigate(Routes.SignUpFirstStep.route)
             })
+        }
+
+        composable(Routes.RoomList.route){
+            RoomList()
         }
     }
 }
@@ -51,6 +76,8 @@ sealed class Routes(val route:String){
     data object SignIn: Routes("SignIn")
     data object SignUpFirstStep: Routes("SignUpFirstStep")
     data object SignUpSecondStep: Routes("SignUpSecondStep")
+
+    data object RoomList: Routes("RoomList")
 
 }
 

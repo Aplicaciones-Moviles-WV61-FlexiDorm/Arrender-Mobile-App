@@ -23,15 +23,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
-import pe.edu.upc.flexiarrendermobile.model.data.RequestSignUpArrender
+import pe.edu.upc.flexiarrendermobile.model.data.RequestSignUpArrenderState
 import pe.edu.upc.flexiarrendermobile.shared.MessageError
 
 
 @Composable
 fun SignUpSignUpFirstStep(
-    requestSignUpArrender: RequestSignUpArrender,
+    requestSignUpArrender: RequestSignUpArrenderState,
     errorMessageModel: MutableState<String?>,
-    secontStep: () -> Unit
+    secontStep: () -> Unit,
+    signInStep:() -> Unit
     ) {
 
     //El scaffold es un contenedor que nos permite tener un appbar y un body
@@ -131,7 +132,7 @@ fun SignUpSignUpFirstStep(
                     }
 
                     //Llamar al message error
-                    MessageError(errorMessageModel)
+                    MessageError(errorMessageModel, "Espera un momento!")
 
 
 
@@ -144,8 +145,7 @@ fun SignUpSignUpFirstStep(
                     Text(
                         text = "Inicia sesión",
                         modifier = Modifier.clickable {
-                            //TODO
-                            //mostrar los datos del usuario
+                            signInStep()
                         },
                         style = TextStyle(textDecoration = TextDecoration.Underline)
                     )
