@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
@@ -100,6 +101,9 @@ sealed class Routes(val route:String){
     data object RoomDetail: Routes("RoomDetail")
 
 }
+
+
+//Meter el preview
 
 
 

@@ -9,6 +9,14 @@ data class ApiResponseRoom(
     val data: Room
 )
 
+
+data class ApiResponseRoomList(
+    val message: String,
+    val status: String,
+    val data: List<Room>
+)
+
+
 data class Room(
     val roomId: Int,
     val title:String,

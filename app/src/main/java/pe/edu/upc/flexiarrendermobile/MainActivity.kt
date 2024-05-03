@@ -48,6 +48,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     FlexiArrenderMobileTheme {
-        Greeting("Android")
+        Home()
     }
 }

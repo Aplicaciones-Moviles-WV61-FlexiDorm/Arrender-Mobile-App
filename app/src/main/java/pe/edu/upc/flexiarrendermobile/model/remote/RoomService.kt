@@ -1,6 +1,7 @@
 package pe.edu.upc.flexiarrendermobile.model.remote
 
 import pe.edu.upc.flexiarrendermobile.model.data.ApiResponseRoom
+import pe.edu.upc.flexiarrendermobile.model.data.ApiResponseRoomList
 import pe.edu.upc.flexiarrendermobile.model.data.RegisterRoomRequestBody
 import retrofit2.Call
 import retrofit2.http.Body
@@ -21,7 +22,9 @@ interface RoomService {
 
     @GET("room/getRoomsByArrenderId/{arrenderId}")
     fun getRoomsByArrenderId(
-        @Path("arrenderId") arrenderId:Int
-    ): Call<ApiResponseRoom>
+        @Header("Authorization") token:String,
+        @Path("arrenderId") arrenderId:Long
+    ): Call<ApiResponseRoomList>
+
 
 }
