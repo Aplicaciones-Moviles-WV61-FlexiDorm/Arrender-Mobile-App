@@ -16,7 +16,8 @@ interface ArrenderDao {
         @Query("DELETE FROM arrender WHERE id = :heroId")
         fun deleteById(heroId: String)
 
-
+    @Query("DELETE FROM arrender")
+    fun deleteAllArrendersLocal()
 
     //Traer un solo usuario
     @Query("SELECT * FROM arrender")

@@ -119,6 +119,10 @@ class ArrenderRepository(
         arrenderDao.deleteById(id)
     }
 
+    fun deleteAllArrenderDataLocal(){
+        arrenderDao.deleteAllArrendersLocal()
+    }
+
     fun getArrenderDataLocal(id:String):ArrenderEntity?{
         return arrenderDao.getArrenderById(id)
     }
