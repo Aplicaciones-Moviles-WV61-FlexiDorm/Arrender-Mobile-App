@@ -1,31 +1,43 @@
-package pe.edu.upc.flexiarrendermobile.ui.room.roomlist
+package pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.room.roomlist
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -65,6 +77,7 @@ fun RoomList(addRoom: () -> Unit) {
             modifier = Modifier.padding(it).fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(56.dp))
 
             val arrenderRepository = ArrenderRepositoryFactory.getArrenderRepository("")
             val dataLocalArrender = arrenderRepository.getArrender()
@@ -87,10 +100,15 @@ fun RoomList(addRoom: () -> Unit) {
                 }
             }
             if(roomList.value.isEmpty()){
+                //empujar el texto hacia el centro
+                Spacer(modifier = Modifier.height(300.dp))
+
                 Text(
-                    text = "No hay habitaciones",
+                    text = "Actualmente no tienes habitaciones registradas",
                     style= TextStyle( color = Color(0xFF846CD9), fontSize = 20.sp),
-                    modifier=Modifier.padding(10.dp)
+                    modifier=Modifier.padding(10.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 17.sp
                 )
             }else{
                 RoomListByArrender(roomList)
@@ -105,38 +123,44 @@ fun RoomList(addRoom: () -> Unit) {
 
 @Composable
 fun RoomListByArrender(roomListByArrender: MutableState<List<Room>>) {
+
+
     // Mostrar la lista de habitaciones
     LazyColumn {
         items(roomListByArrender.value) { room ->
+
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
+                    .fillMaxHeight(0.5f)
                     .padding(8.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF846CD9), //Card background color
+                    containerColor = Color(0xFF846CD9), //Color de fondo de la tarjeta
                 )
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    roomImage(url = room.imageUrl, size = 120.dp)
-                    Text(text = room.title,style= TextStyle( color = Color.White), modifier=Modifier.padding(4.dp))
-                    Text(text = "S/."+room.price.toString()+" x hora",style= TextStyle( color = Color.White), modifier=Modifier.padding(4.dp))
-                    Text(text = "Cerca a "+room.nearUniversities,style= TextStyle( color = Color.White), modifier=Modifier.padding(4.dp))
+                    Box(
+                        modifier = Modifier
+                            .height(120.dp) // Altura definida para el contenedor de la imagen
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp)
+                    ) {
+                        roomImage(url = room.imageUrl, size = 250.dp)
+                    }
+                    Text(text = room.title, style = TextStyle(color = Color.White), modifier = Modifier.padding(4.dp))
+                    Text(text = "S/." + room.price.toString() + " x hora", style = TextStyle(color = Color.White), modifier = Modifier.padding(4.dp))
+                    Text(text =  room.nearUniversities, style = TextStyle(color = Color.White), modifier = Modifier.padding(4.dp, 4.dp, 4.dp, 10.dp))
                 }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun RoomListPreview() {
-    FlexiArrenderMobileTheme {
-        RoomList(addRoom = {})
-    }
-}
+
 
 
 /*
@@ -171,8 +195,17 @@ val arrenderRepository = ArrenderRepositoryFactory.getArrenderRepository("")
 @Composable
 fun roomImage(url: String, size: Dp){
     GlideImage(
+
         imageModel={url},
         imageOptions= ImageOptions(contentScale= ContentScale.Crop),
-        modifier=Modifier.size(size)
+        modifier=Modifier.fillMaxWidth(),
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun roomImagePreview() {
+    FlexiArrenderMobileTheme {
+        roomImage(url = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png", size = 120.dp)
+    }
 }

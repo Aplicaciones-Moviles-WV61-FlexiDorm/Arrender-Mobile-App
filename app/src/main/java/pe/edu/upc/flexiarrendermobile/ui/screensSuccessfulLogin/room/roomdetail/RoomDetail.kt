@@ -1,5 +1,6 @@
-package pe.edu.upc.flexiarrendermobile.ui.room.roomdetail
+package pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.room.roomdetail
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -247,10 +248,12 @@ fun LabeledTextField(
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Preview(showBackground = true)
 @Composable
 fun RoomDetailPreview() {
     FlexiArrenderMobileTheme {
-        RoomDetail(mutableStateOf(null),{})
+        RoomDetail(errorMessageModel = mutableStateOf<String?>(null), finishAddRoom = {})
+
     }
 }
