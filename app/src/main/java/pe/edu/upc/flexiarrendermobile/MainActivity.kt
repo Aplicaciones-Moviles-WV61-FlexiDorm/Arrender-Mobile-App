@@ -10,7 +10,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import pe.edu.upc.flexiarrendermobile.ui.home.Home
+import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.navDrawer.NavDrawer
+import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.profile.Profile
 import pe.edu.upc.flexiarrendermobile.ui.theme.FlexiArrenderMobileTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,6 +30,10 @@ class MainActivity : ComponentActivity() {
 
                    // if (requestSignUpArrender != null) {
                         Home()
+                        //NavDrawer()
+
+                        //Profile()
+
                     //} else {
                        // Text("Hello, FlexiArrenderMobile!")
                   //  }

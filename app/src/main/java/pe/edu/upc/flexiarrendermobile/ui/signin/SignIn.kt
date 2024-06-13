@@ -31,19 +31,20 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pe.edu.upc.flexiarrendermobile.factories.ArrenderRepositoryFactory
 import pe.edu.upc.flexiarrendermobile.model.data.RequestSignInArrenderBody
 import pe.edu.upc.flexiarrendermobile.model.data.RequestSignInArrenderState
-import pe.edu.upc.flexiarrendermobile.model.data.RequestSignUpArrenderState
 import pe.edu.upc.flexiarrendermobile.shared.MessageError
-import pe.edu.upc.flexiarrendermobile.ui.signup.SignUpSecondStep
-import pe.edu.upc.flexiarrendermobile.ui.theme.FlexiArrenderMobileTheme
 
 @Composable
-fun SignIn(errorMessageModel: MutableState<String?>, sinUpFirstStep:()->Unit, signInSuccessful:()->Unit) {
+fun SignIn(
+    errorMessageModel: MutableState<String?>,
+    sinUpFirstStep: () -> Unit,
+    signInSuccessful: () -> Unit,
+    logoutEvent: MutableState<Boolean>
+) {
 
     val email = remember{
         mutableStateOf("")
@@ -188,6 +189,8 @@ fun SignIn(errorMessageModel: MutableState<String?>, sinUpFirstStep:()->Unit, si
                                             arrenderEntity
                                         )
 
+                                        logoutEvent.value = false
+
                                         println("Se guardo el arrender en la base de datos local")
                                         signInSuccessful()
 
@@ -241,14 +244,3 @@ fun SignIn(errorMessageModel: MutableState<String?>, sinUpFirstStep:()->Unit, si
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SignInPreview() {
-    FlexiArrenderMobileTheme {
-        SignIn(
-            errorMessageModel = mutableStateOf(null),
-            sinUpFirstStep = {},
-            signInSuccessful = {}
-        )
-    }
-}

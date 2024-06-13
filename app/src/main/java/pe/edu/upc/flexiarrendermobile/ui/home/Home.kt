@@ -1,17 +1,16 @@
 package pe.edu.upc.flexiarrendermobile.ui.home
 
-import android.app.AlertDialog
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import pe.edu.upc.flexiarrendermobile.model.data.RequestSignUpArrenderState
-import pe.edu.upc.flexiarrendermobile.ui.room.roomdetail.RoomDetail
-import pe.edu.upc.flexiarrendermobile.ui.room.roomlist.RoomList
+import pe.edu.upc.flexiarrendermobile.shared.routes.Routes
+import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.navDrawer.NavDrawer
 import pe.edu.upc.flexiarrendermobile.ui.signin.SignIn
 import pe.edu.upc.flexiarrendermobile.ui.signup.SignUpSecondStep
 import pe.edu.upc.flexiarrendermobile.ui.signup.SignUpSignUpFirstStep
@@ -28,13 +27,19 @@ fun Home(){
 
     val errorMessage = remember { mutableStateOf<String?>(null) }
 
+// Estado para el evento de cerrar sesión
+    val logoutEvent = remember { mutableStateOf(false) }
 
-
-
-
-
-
-
+    // Navega al SignIn cuando se activa el evento de cerrar sesión
+    LaunchedEffect(logoutEvent.value) {
+        if (logoutEvent.value) {
+            navController.navigate(Routes.SignIn.route) {
+                popUpTo(0) {
+                    inclusive = true
+                }
+            }
+        }
+    }
 
     NavHost(navController = navController, startDestination=Routes.SignIn.route){
         composable(Routes.SignUpFirstStep.route){
@@ -69,41 +74,30 @@ fun Home(){
                     navController.navigate(Routes.SignUpFirstStep.route)
                 },
                 signInSuccessful={
-                    navController.navigate(Routes.RoomList.route)
-                }
+                    navController.navigate(Routes.NavDrawer.route)
+                },
+                logoutEvent
             )
         }
 
-        composable(Routes.RoomList.route){
-            RoomList(
-                addRoom={
-                    navController.navigate(Routes.RoomDetail.route)
-                }
-            )
+        composable(Routes.NavDrawer.route) {
+            NavDrawer(logoutEvent = logoutEvent)
         }
 
-        composable(Routes.RoomDetail.route){
-            RoomDetail(errorMessage, finishAddRoom={
-                navController.navigate(Routes.RoomList.route)
-            })
-        }
+
+
 
     }
 }
 
-sealed class Routes(val route:String){
-    data object SignIn: Routes("SignIn")
-    data object SignUpFirstStep: Routes("SignUpFirstStep")
-    data object SignUpSecondStep: Routes("SignUpSecondStep")
-
-    data object RoomList: Routes("RoomList")
-
-    data object RoomDetail: Routes("RoomDetail")
-
+@Preview
+@Composable
+fun HomePreview(){
+    Home()
 }
 
 
-//Meter el preview
+
 
 
 
