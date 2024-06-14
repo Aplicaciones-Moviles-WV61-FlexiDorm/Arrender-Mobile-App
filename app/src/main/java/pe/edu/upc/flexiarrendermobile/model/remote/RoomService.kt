@@ -12,6 +12,7 @@ import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 
@@ -31,6 +32,14 @@ interface RoomService {
         @Header("Authorization") token:String,
         @Path("arrenderId") arrenderId:Long
     ): Call<ApiResponseRoomList>
+
+    @Multipart
+    @PUT("room/updateRoom")
+    fun updateRoom(
+        @Header("Authorization") token:String,
+        @Part("request") request: RequestBody,
+        @Part image: MultipartBody.Part?
+    ): Call<ApiResponseRoom>
 
 
 }

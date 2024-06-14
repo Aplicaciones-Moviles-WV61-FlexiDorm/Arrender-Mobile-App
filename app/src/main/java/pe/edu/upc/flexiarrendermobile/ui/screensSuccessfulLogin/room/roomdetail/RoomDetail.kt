@@ -1,7 +1,6 @@
 package pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.room.roomdetail
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -45,14 +44,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -61,30 +58,45 @@ import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
-import kotlinx.coroutines.delay
 import pe.edu.upc.flexiarrendermobile.R
 import pe.edu.upc.flexiarrendermobile.factories.ArrenderRepositoryFactory
 import pe.edu.upc.flexiarrendermobile.factories.RoomRepositoryFactory
 import pe.edu.upc.flexiarrendermobile.model.data.RegisterRoomRequestBody
 import pe.edu.upc.flexiarrendermobile.model.data.RegisterRoomState
+import pe.edu.upc.flexiarrendermobile.model.data.Room
+import pe.edu.upc.flexiarrendermobile.model.data.RoomUpdateState
 import pe.edu.upc.flexiarrendermobile.shared.MessageError
-import pe.edu.upc.flexiarrendermobile.ui.theme.FlexiArrenderMobileTheme
 
 @Composable
-fun RoomDetail(errorMessageModel: MutableState<String?>, finishAddRoom:()->Unit) {
+fun RoomDetail(
+    errorMessageModel: MutableState<String?>,
+    finishAddRoom: () -> Unit,
+    roomNewOrSelected: RoomUpdateState
+) {
+    val userLatitude = remember { mutableStateOf(0.0) }
+    val userLongitude = remember { mutableStateOf(0.0) }
+
+
 
     val registerRoomState = RegisterRoomState()
+    if (roomNewOrSelected.roomId.value != 0) {
+        registerRoomState.title.value = roomNewOrSelected.title.value
+        registerRoomState.description.value = roomNewOrSelected.description.value
+        registerRoomState.address.value = roomNewOrSelected.address.value
+        registerRoomState.price.value = roomNewOrSelected.price.value
+        registerRoomState.nearUniversities.value = roomNewOrSelected.nearUniversities.value
+        registerRoomState.latitude.value = roomNewOrSelected.latitude.value
+        registerRoomState.longitude.value = roomNewOrSelected.longitude.value
+
+        userLatitude.value = roomNewOrSelected.latitude.value
+        userLongitude.value = roomNewOrSelected.longitude.value
+
+    }
 
     val selectedImageUri = remember {
         mutableStateOf<Uri?>(null)
@@ -94,9 +106,6 @@ fun RoomDetail(errorMessageModel: MutableState<String?>, finishAddRoom:()->Unit)
 
 
     val context = LocalContext.current
-
-    val userLatitude = remember { mutableStateOf(0.0) }
-    val userLongitude = remember { mutableStateOf(0.0) }
 
 
     val singleImagePickerLauncher =
@@ -221,7 +230,13 @@ fun RoomDetail(errorMessageModel: MutableState<String?>, finishAddRoom:()->Unit)
                         }
                     }
                 ) {
-                    Text("Ver en el mapa")
+                    if(roomNewOrSelected.roomId.value!=0){
+                        Text("Cambiar ubicacion")
+
+                    }else{
+                        Text("Ver en el mapa")
+
+                    }
                 }
 
                 if (showMap.value) {
@@ -234,6 +249,9 @@ fun RoomDetail(errorMessageModel: MutableState<String?>, finishAddRoom:()->Unit)
                             registerRoomState.longitude.value = userLongitude.value
                         },
                         onClose = {
+                            registerRoomState.latitude.value = userLatitude.value
+                            registerRoomState.longitude.value = userLongitude.value
+                            println( "Latitud: ${registerRoomState.latitude.value}, Longitud: ${registerRoomState.longitude.value}")
                             showMap.value = false
                         }
                     )
@@ -262,24 +280,37 @@ fun RoomDetail(errorMessageModel: MutableState<String?>, finishAddRoom:()->Unit)
                     .clip(CircleShape)
                     .background(Color.Gray)
             ) {
-                if (selectedImageUri.value != null) {
+
+                if(roomNewOrSelected.roomId.value != 0 && selectedImageUri.value == null) {
+
                     AsyncImage(
-                        model = selectedImageUri.value,
+                        model = roomNewOrSelected.imageUrl.value,
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxSize()
                     )
-                } else {
 
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_image_search_24),
-                        contentDescription = "image default",
-                        tint = Color.White,
-                        modifier = Modifier.size(70.dp)
-                    )
+                }else{
+                    if (selectedImageUri.value != null) {
+                        AsyncImage(
+                            model = selectedImageUri.value,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxSize()
+                        )
+                    } else {
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_image_search_24),
+                            contentDescription = "image default",
+                            tint = Color.White,
+                            modifier = Modifier.size(70.dp)
+                        )
 
 
+                    }
                 }
             }
 
@@ -313,7 +344,7 @@ fun RoomDetail(errorMessageModel: MutableState<String?>, finishAddRoom:()->Unit)
                     }
                 }
             ) {
-                if (selectedImageUri.value != null) {
+                if (roomNewOrSelected.roomId.value != 0) {
                     Text("Cambiar imagen")
                 } else {
                     Text("Cargar imagen")
@@ -361,52 +392,113 @@ fun RoomDetail(errorMessageModel: MutableState<String?>, finishAddRoom:()->Unit)
                         // Mostrar mensaje de error
                         return@Button
                     }
-                    if (selectedImageUri.value == null) {
+                    if (selectedImageUri.value == null && roomNewOrSelected.roomId.value == 0) {
                         errorMessageModel.value = "Debes seleccionar una imagen"
+                        return@Button
+                    }
+                    if(registerRoomState.latitude.value == 0.0 || registerRoomState.longitude.value == 0.0){
+                        errorMessageModel.value = "Debes seleccionar una ubicación en el mapa"
                         return@Button
                     }
 
                     val arrenderRepository = ArrenderRepositoryFactory.getArrenderRepository("")
                     val dataLocalArrender = arrenderRepository.getArrender()
 
-                    //Mapear el estado a la solicitud de registro
-                    val body = RegisterRoomRequestBody(
-                        title = registerRoomState.title.value,
-                        description = registerRoomState.description.value,
-                        address = registerRoomState.address.value,
-                        price = registerRoomState.price.value.toDouble(),
-                        nearUniversities = registerRoomState.nearUniversities.value,
-                        arrenderId = dataLocalArrender[0].id.toLong()
-                    )
-
-
-                    println("Token en detail: ${dataLocalArrender[0].token}")
-
                     val roomRepositoryFactory =
                         RoomRepositoryFactory.getRoomRepositoryFactory(dataLocalArrender[0].token)
 
-
-
-                    roomRepositoryFactory.registerRoom(
-                        body,
-                        selectedImageUri,
-                        context
-                    ) { apiResponse, errorCode, errorBody ->
-                        if (apiResponse != null) {
-                            println(
-                                "Código de estado: $errorCode, Cuerpo de la respuesta: $apiResponse"
-                            )
-                            finishAddRoom()
-                        } else {
-                            println(
-                                "Código de estado: $errorCode, Cuerpo de la respuesta: $errorBody"
-                            )
+                    //Mapear el estado a la solicitud de registro
+                    if(roomNewOrSelected.roomId.value == 0){
+                       val body = RegisterRoomRequestBody(
+                            title = registerRoomState.title.value,
+                            description = registerRoomState.description.value,
+                            address = registerRoomState.address.value,
+                            price = registerRoomState.price.value.toDouble(),
+                            nearUniversities = registerRoomState.nearUniversities.value,
+                            latitude = registerRoomState.latitude.value,
+                            longitude = registerRoomState.longitude.value,
+                            arrenderId = dataLocalArrender[0].id.toLong()
+                        )
+                        roomRepositoryFactory.registerRoom(
+                            body,
+                            selectedImageUri,
+                            context
+                        ) { apiResponse, errorCode, errorBody ->
+                            if (apiResponse != null) {
+                                println(
+                                    "Código de estado: $errorCode, Cuerpo de la respuesta: $apiResponse"
+                                )
+                                finishAddRoom()
+                            } else {
+                                println(
+                                    "Código de estado: $errorCode, Cuerpo de la respuesta: $errorBody"
+                                )
+                            }
                         }
+                    }
+                    else{
+                        val bodyUpdate= Room(
+                            roomId = roomNewOrSelected.roomId.value,
+                            title = registerRoomState.title.value,
+                            description = registerRoomState.description.value,
+                            address = registerRoomState.address.value,
+                            imageUrl = roomNewOrSelected.imageUrl.value,
+                            price = registerRoomState.price.value.toDouble(),
+                            nearUniversities = registerRoomState.nearUniversities.value,
+                            latitude = registerRoomState.latitude.value,
+                            longitude = registerRoomState.longitude.value,
+                            arrenderId = dataLocalArrender[0].id.toLong()
+                       )
+
+                        roomRepositoryFactory.updateRoom(
+                            bodyUpdate,
+                            selectedImageUri,
+                            context
+                        ) { apiResponse, errorCode, errorBody ->
+                            if (apiResponse != null) {
+                                println(
+                                    "Código de estado: $errorCode, Cuerpo de la respuesta: $apiResponse"
+                                )
+                                finishAddRoom()
+                            } else {
+                                println(
+                                    "Código de estado: $errorCode, Cuerpo de la respuesta: $errorBody"
+                                )
+                            }
+                        }
+
+
+
+
+
                     }
 
 
+                    //vaciar los campos de room selected
+                    roomNewOrSelected.roomId.value = 0
+                    roomNewOrSelected.title.value = ""
+                    roomNewOrSelected.description.value = ""
+                    roomNewOrSelected.address.value = ""
+                    roomNewOrSelected.price.value = ""
+                    roomNewOrSelected.nearUniversities.value = ""
+                    roomNewOrSelected.arrenderId.value = 0
+                    roomNewOrSelected.latitude.value = 0.0
+                    roomNewOrSelected.longitude.value = 0.0
+                    roomNewOrSelected.imageUrl.value = ""
+
+
+
+
+
+
+
                 }) {
-                Text(text = "Listo")
+
+                if (roomNewOrSelected.roomId.value == 0) {
+                    Text(text = "Registrar")
+                } else {
+                    Text(text = "Actualizar")
+                }
             }
 
 
@@ -417,7 +509,21 @@ fun RoomDetail(errorMessageModel: MutableState<String?>, finishAddRoom:()->Unit)
                     containerColor = Color.White
                 ),
                 onClick = {
+
+                    //vaciar los campos de room selected
+                    roomNewOrSelected.roomId.value = 0
+                    roomNewOrSelected.title.value = ""
+                    roomNewOrSelected.description.value = ""
+                    roomNewOrSelected.address.value = ""
+                    roomNewOrSelected.price.value = ""
+                    roomNewOrSelected.nearUniversities.value = ""
+                    roomNewOrSelected.arrenderId.value = 0
+                    roomNewOrSelected.latitude.value = 0.0
+                    roomNewOrSelected.longitude.value = 0.0
+                    roomNewOrSelected.imageUrl.value = ""
+
                     finishAddRoom()
+
 
                 }) {
                 Text(text = "Cancelar")
@@ -461,6 +567,8 @@ fun LabeledTextField(
 
 
 
+
+
 private fun getLocation(context: Context, userLatitude: MutableState<Double>, userLongitude: MutableState<Double>, showMap: MutableState<Boolean>) {
     if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -495,11 +603,6 @@ fun MyGoogleMaps(
         marker?.position = LatLng(latitude.value, longitude.value)
    }
 
-// Utilizamos LaunchedEffect para detectar cuando se detiene el movimiento del mapa
-    //LaunchedEffect(isMapMoving) {
-    //    delay(1000) // Espera 1 segundo después del último movimiento de la cámara
-   //     isMapMoving = true
-   // }
 
     Dialog(
         onDismissRequest = onClose

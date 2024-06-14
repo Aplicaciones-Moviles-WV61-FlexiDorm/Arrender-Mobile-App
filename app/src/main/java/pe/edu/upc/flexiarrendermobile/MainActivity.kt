@@ -38,17 +38,17 @@ class MainActivity : ComponentActivity() {
                     //var requestSignUpArrender: RequestSignUpArrender? =null
 
                    // if (requestSignUpArrender != null) {
-                       //Home()
+                       Home()
 
 
-                    val errorMessage = remember {
+                    /*val errorMessage = remember {
                         mutableStateOf<String?>(null)
                     }
                     val navController = rememberNavController()
                     RoomDetail(
                         errorMessageModel = errorMessage,
                         finishAddRoom = { navController.popBackStack() }
-                    )
+                    )*/
 
                         //NavDrawer()
 

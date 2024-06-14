@@ -15,30 +15,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.NavigationDrawerItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -48,19 +40,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import pe.edu.upc.flexiarrendermobile.factories.ArrenderRepositoryFactory
+import pe.edu.upc.flexiarrendermobile.model.data.RegisterRoomState
+import pe.edu.upc.flexiarrendermobile.model.data.RoomUpdateState
 import pe.edu.upc.flexiarrendermobile.shared.routes.Routes
 import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.profile.Profile
 import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.profile.UpdateProfile
@@ -79,6 +69,9 @@ fun NavDrawer(logoutEvent: MutableState<Boolean>) {
     val navController = rememberNavController()
 
     val errorMessage = remember { mutableStateOf<String?>(null) }
+
+    val roomNewOrSelected= RoomUpdateState()
+
     val selectedItem = remember { mutableStateOf("Mis habitaciones") }
 
     ModalNavigationDrawer(
@@ -202,12 +195,14 @@ fun NavDrawer(logoutEvent: MutableState<Boolean>) {
             NavHost(navController = navController, startDestination = Routes.RoomList.route) {
                 composable(Routes.RoomList.route) {
                     RoomList(
-                        addRoom = { navController.navigate(Routes.RoomDetail.route) }
+                        roomNewOrSelected=  roomNewOrSelected,
+                        roomDetail = { navController.navigate(Routes.RoomDetail.route) }
                     )
                 }
                 composable(Routes.RoomDetail.route) {
                     RoomDetail(
                         errorMessageModel = errorMessage,
+                        roomNewOrSelected=  roomNewOrSelected,
                         finishAddRoom = { navController.popBackStack() }
                     )
                 }

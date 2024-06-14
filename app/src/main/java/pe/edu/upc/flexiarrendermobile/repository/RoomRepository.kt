@@ -21,6 +21,7 @@ import pe.edu.upc.flexiarrendermobile.model.data.ApiResponse
 import pe.edu.upc.flexiarrendermobile.model.data.ApiResponseRoom
 import pe.edu.upc.flexiarrendermobile.model.data.ApiResponseRoomList
 import pe.edu.upc.flexiarrendermobile.model.data.RegisterRoomRequestBody
+import pe.edu.upc.flexiarrendermobile.model.data.Room
 import pe.edu.upc.flexiarrendermobile.model.remote.RoomService
 import retrofit2.Call
 import retrofit2.Callback
@@ -105,6 +106,74 @@ class RoomRepository(
                     callback(null, errorCode, t.message)
                 }
             })
+
+    }
+
+    fun updateRoom(
+        updateRoom: Room,
+        selectedImageUri: MutableState<Uri?>,
+        context: Context,
+        callback: (ApiResponseRoom?, Int?, String?) -> Unit
+    ) {
+        println( "El token el el room repository es: $token")
+
+        println( "La imagen seleccionada es: $selectedImageUri")
+
+        val gson = Gson()
+        val jsonRequest = gson.toJson(updateRoom)
+        val requestBody = jsonRequest.toRequestBody("application/json".toMediaTypeOrNull())
+
+
+        var imagePart: MultipartBody.Part?
+
+        if(selectedImageUri.value!=null){
+            imagePart = selectedImageUri.value?.let { uri ->
+                val inputStream = context.contentResolver.openInputStream(uri)
+                inputStream?.use { input ->
+                    val imageBytes = input.readBytes()
+                    val requestBody = imageBytes.toRequestBody("image/*".toMediaTypeOrNull())
+                    MultipartBody.Part.createFormData("image", "image.jpg", requestBody)
+                }
+            }
+        }else{
+             imagePart = null
+        }
+
+        val call = roomService.updateRoom("Bearer $token", requestBody, imagePart)
+
+        call.enqueue(object : Callback<ApiResponseRoom> {
+            override fun onResponse(
+                call: Call<ApiResponseRoom>,
+                response: Response<ApiResponseRoom>
+            ) {
+                if (response.isSuccessful) {
+
+                    val apiResponseRoom = response.body()
+                    val statusCode = response.code()
+                    println( "El api response room es: $apiResponseRoom")
+                    callback(apiResponseRoom, statusCode, null)
+
+                } else {
+                    // La respuesta no es exitosa, obtén el código de estado y el cuerpo del error
+                    val errorCode = response.code()
+                    val errorBody = response.errorBody()?.string()
+
+                    callback(null, errorCode, errorBody)
+                }
+            }
+
+            override fun onFailure(call: Call<ApiResponseRoom>, t: Throwable) {
+                var errorCode =
+                    -1 // Valor por defecto en caso de que no se pueda obtener el código de estado HTTP
+                if (t is HttpException) {
+                    // Si es una excepción relacionada con HTTP, obtén el código de estado HTTP
+                    errorCode = t.code()
+                }
+
+                // Llamar al callback con el código de estado HTTP y el mensaje de error
+                callback(null, errorCode, t.message)
+            }
+        })
 
     }
 

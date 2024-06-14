@@ -1,37 +1,29 @@
 package pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.room.roomlist
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,14 +38,13 @@ import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import pe.edu.upc.flexiarrendermobile.factories.ArrenderRepositoryFactory
 import pe.edu.upc.flexiarrendermobile.factories.RoomRepositoryFactory
-import pe.edu.upc.flexiarrendermobile.model.data.RequestSignUpArrenderState
 import pe.edu.upc.flexiarrendermobile.model.data.Room
-import pe.edu.upc.flexiarrendermobile.ui.signup.SignUpSignUpFirstStep
+import pe.edu.upc.flexiarrendermobile.model.data.RoomUpdateState
 import pe.edu.upc.flexiarrendermobile.ui.theme.FlexiArrenderMobileTheme
 
 
 @Composable
-fun RoomList(addRoom: () -> Unit) {
+fun RoomList(roomDetail: () -> Unit, roomNewOrSelected: RoomUpdateState) {
 
     var roomList = remember {
         mutableStateOf(listOf<Room>())
@@ -68,13 +59,15 @@ fun RoomList(addRoom: () -> Unit) {
             contentColor = Color.White,
             onClick = {
             // Navegar a la pantalla de detalle de la habitación
-            addRoom()
+                roomDetail()
         }) {
             Icon(Icons.Filled.Add, "Nueva habitación")
         }
     }) {
         Column(
-            modifier = Modifier.padding(it).fillMaxSize(),
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(56.dp))
@@ -111,7 +104,7 @@ fun RoomList(addRoom: () -> Unit) {
                     fontSize = 17.sp
                 )
             }else{
-                RoomListByArrender(roomList)
+                RoomListByArrender(roomList, roomNewOrSelected, roomDetail)
             }
 
         }
@@ -122,7 +115,11 @@ fun RoomList(addRoom: () -> Unit) {
 
 
 @Composable
-fun RoomListByArrender(roomListByArrender: MutableState<List<Room>>) {
+fun RoomListByArrender(
+    roomListByArrender: MutableState<List<Room>>,
+    roomNewOrSelected: RoomUpdateState,
+    roomDetail: () -> Unit
+) {
 
 
     // Mostrar la lista de habitaciones
@@ -152,44 +149,42 @@ fun RoomListByArrender(roomListByArrender: MutableState<List<Room>>) {
                         roomImage(url = room.imageUrl, size = 250.dp)
                     }
                     Text(text = room.title, style = TextStyle(color = Color.White), modifier = Modifier.padding(4.dp))
-                    Text(text = "S/." + room.price.toString() + " x hora", style = TextStyle(color = Color.White), modifier = Modifier.padding(4.dp))
-                    Text(text =  room.nearUniversities, style = TextStyle(color = Color.White), modifier = Modifier.padding(4.dp, 4.dp, 4.dp, 10.dp))
+                    Text(text = "S/." + room.price.toString() + " x hora - "+ room.nearUniversities, style = TextStyle(color = Color.White), modifier = Modifier.padding(4.dp))
+                    Button(
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Color(0xFF846CD9),
+                            containerColor = Color.White
+                        ),
+                        modifier = Modifier.padding(),
+                        onClick = {
+                            // Navegar a la pantalla de detalle de la habitación junto con la información de la habitación
+
+                            roomNewOrSelected.roomId.value = room.roomId
+                            roomNewOrSelected.title.value = room.title
+                            roomNewOrSelected.description.value = room.description
+                            roomNewOrSelected.address.value = room.address
+                            roomNewOrSelected.price.value = room.price.toString()
+                            roomNewOrSelected.nearUniversities.value = room.nearUniversities
+                            roomNewOrSelected.arrenderId.value = room.arrenderId
+                            roomNewOrSelected.latitude.value = room.latitude
+                            roomNewOrSelected.longitude.value = room.longitude
+                            roomNewOrSelected.imageUrl.value = room.imageUrl
+
+                            roomDetail()
+
+
+
+
+                        }
+                    ) {
+                        Text(text = "Editar")
+                    }
                 }
             }
         }
     }
 }
 
-
-
-
-/*
-val arrenderRepository = ArrenderRepositoryFactory.getArrenderRepository("")
-            val dataLocalArrender = arrenderRepository.getArrender()
-
-            //imirpimrla dataLocalArrender
-            println("dataLocalArrender: $dataLocalArrender")
-            // Mostrar la lista de habitaciones
-            var roomListByArrender =
-                RoomRepositoryFactory.getRoomRepositoryFactory(dataLocalArrender[0].token)
-
-            roomListByArrender.getRoomsById(dataLocalArrender[0].id.toLong()) { apiResponseRoom, errorCode, status ->
-
-                if (apiResponseRoom != null) {
-                    println("apiResponseRoom: $apiResponseRoom")
-                    roomList.value = apiResponseRoom.data
-                } else {
-                    // Mostrar mensaje de error
-
-                    println("error: $status")
-                }
-            }
-            if(roomList.value.isEmpty()){
-                Text(text = "No hay habitaciones")
-            }else{
-                RoomListByArrender(roomList)
-            }
-*/
 
 
 @Composable
