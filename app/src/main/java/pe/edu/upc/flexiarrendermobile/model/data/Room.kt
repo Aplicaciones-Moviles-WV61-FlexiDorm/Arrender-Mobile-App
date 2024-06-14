@@ -37,7 +37,10 @@ data class RegisterRoomState(
     val address : MutableState<String> = mutableStateOf(""),
     val price : MutableState<String> = mutableStateOf(""),
     val nearUniversities : MutableState<String> = mutableStateOf(""),
-    val arrenderId : MutableState<Int> = mutableStateOf(0)
+    val arrenderId : MutableState<Int> = mutableStateOf(0),
+
+    val latitude : MutableState<Double> = mutableStateOf(0.0),
+    val longitude : MutableState<Double> = mutableStateOf(0.0),
 
 
 )

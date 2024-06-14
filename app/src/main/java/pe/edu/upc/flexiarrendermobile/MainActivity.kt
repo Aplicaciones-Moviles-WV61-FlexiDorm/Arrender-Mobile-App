@@ -38,9 +38,9 @@ class MainActivity : ComponentActivity() {
                     //var requestSignUpArrender: RequestSignUpArrender? =null
 
                    // if (requestSignUpArrender != null) {
-                       Home()
+                       //Home()
 
-                    /*
+
                     val errorMessage = remember {
                         mutableStateOf<String?>(null)
                     }
@@ -48,9 +48,7 @@ class MainActivity : ComponentActivity() {
                     RoomDetail(
                         errorMessageModel = errorMessage,
                         finishAddRoom = { navController.popBackStack() }
-
-
-                    )*/
+                    )
 
                         //NavDrawer()
 

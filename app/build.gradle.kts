@@ -72,6 +72,10 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.5.0")
 
+    //google maps
+    implementation ("com.google.maps.android:maps-compose:4.4.1")
+    implementation ("com.google.android.gms:play-services-maps:18.1.0")
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
 
     annotationProcessor(libs.androidx.room.compiler)
     testImplementation(libs.junit)
