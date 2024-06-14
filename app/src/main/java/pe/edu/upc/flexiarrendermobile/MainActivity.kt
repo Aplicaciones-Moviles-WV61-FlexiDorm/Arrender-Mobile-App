@@ -1,5 +1,7 @@
 package pe.edu.upc.flexiarrendermobile
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,15 +10,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
 import pe.edu.upc.flexiarrendermobile.ui.home.Home
 import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.navDrawer.NavDrawer
 import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.profile.Profile
+import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.room.roomdetail.RoomDetail
 import pe.edu.upc.flexiarrendermobile.ui.theme.FlexiArrenderMobileTheme
 
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -29,7 +38,20 @@ class MainActivity : ComponentActivity() {
                     //var requestSignUpArrender: RequestSignUpArrender? =null
 
                    // if (requestSignUpArrender != null) {
-                        Home()
+                       Home()
+
+                    /*
+                    val errorMessage = remember {
+                        mutableStateOf<String?>(null)
+                    }
+                    val navController = rememberNavController()
+                    RoomDetail(
+                        errorMessageModel = errorMessage,
+                        finishAddRoom = { navController.popBackStack() }
+
+
+                    )*/
+
                         //NavDrawer()
 
                         //Profile()
@@ -41,6 +63,9 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+
+
 }
 
 @Composable

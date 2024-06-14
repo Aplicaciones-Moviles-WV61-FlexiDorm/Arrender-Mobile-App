@@ -196,6 +196,7 @@ val arrenderRepository = ArrenderRepositoryFactory.getArrenderRepository("")
 fun roomImage(url: String, size: Dp){
     GlideImage(
 
+
         imageModel={url},
         imageOptions= ImageOptions(contentScale= ContentScale.Crop),
         modifier=Modifier.fillMaxWidth(),

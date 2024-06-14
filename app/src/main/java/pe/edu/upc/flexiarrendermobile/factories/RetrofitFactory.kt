@@ -6,6 +6,7 @@ import okhttp3.Response
 import pe.edu.upc.flexiarrendermobile.network.ApiClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 
 class RetrofitFactory {
@@ -13,15 +14,19 @@ class RetrofitFactory {
     companion object {
         private var retrofit: Retrofit? = null
         fun getRetrofit(token:String): Retrofit {
-            println( "Token: $token")
+            println( "Token en retrofit: $token")
             if (retrofit == null) {
                 val client = OkHttpClient.Builder()
-                    .addInterceptor(AuthInterceptor(token))
+                    //.addInterceptor(AuthInterceptor(token))
+                    .connectTimeout(30, TimeUnit.SECONDS) // Tiempo de espera para establecer la conexión
+                    .readTimeout(30, TimeUnit.SECONDS) // Tiempo de espera para leer datos del servidor
+                    .writeTimeout(60, TimeUnit.SECONDS)
                     .build()
                 //Este client no se adjunta tovavia a retrofit
 
                 retrofit = Retrofit.Builder()
                     .baseUrl(ApiClient.BASE_URL)
+                    .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
             }

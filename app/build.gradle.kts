@@ -70,6 +70,9 @@ dependencies {
 
     kapt(libs.androidx.room.compiler)
 
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+
     annotationProcessor(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
