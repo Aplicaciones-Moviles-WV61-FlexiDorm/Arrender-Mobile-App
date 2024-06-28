@@ -70,13 +70,15 @@ import pe.edu.upc.flexiarrendermobile.model.data.RegisterRoomRequestBody
 import pe.edu.upc.flexiarrendermobile.model.data.RegisterRoomState
 import pe.edu.upc.flexiarrendermobile.model.data.Room
 import pe.edu.upc.flexiarrendermobile.model.data.RoomUpdateState
+import pe.edu.upc.flexiarrendermobile.shared.Loader
 import pe.edu.upc.flexiarrendermobile.shared.MessageError
 
 @Composable
 fun RoomDetail(
     errorMessageModel: MutableState<String?>,
     finishAddRoom: () -> Unit,
-    roomNewOrSelected: RoomUpdateState
+    roomNewOrSelected: RoomUpdateState,
+    isLoading: MutableState<Boolean>
 ) {
     val userLatitude = remember { mutableStateOf(0.0) }
     val userLongitude = remember { mutableStateOf(0.0) }
@@ -379,6 +381,9 @@ fun RoomDetail(
                 ),
                 modifier = Modifier.padding(),
                 onClick = {
+
+                    isLoading.value = true
+
                     // Validar los campos y enviar la solicitud de registro
                     if (
                         registerRoomState.title.value.isEmpty() ||
@@ -387,16 +392,19 @@ fun RoomDetail(
                         registerRoomState.price.value.isEmpty() ||
                         registerRoomState.nearUniversities.value.isEmpty()
                     ) {
+                        isLoading.value = false
 
                         errorMessageModel.value = "Los campos no pueden estar vacios"
                         // Mostrar mensaje de error
                         return@Button
                     }
                     if (selectedImageUri.value == null && roomNewOrSelected.roomId.value == 0) {
+                        isLoading.value = false
                         errorMessageModel.value = "Debes seleccionar una imagen"
                         return@Button
                     }
                     if(registerRoomState.latitude.value == 0.0 || registerRoomState.longitude.value == 0.0){
+                        isLoading.value = false
                         errorMessageModel.value = "Debes seleccionar una ubicación en el mapa"
                         return@Button
                     }
@@ -424,6 +432,7 @@ fun RoomDetail(
                             selectedImageUri,
                             context
                         ) { apiResponse, errorCode, errorBody ->
+                            isLoading.value = false
                             if (apiResponse != null) {
                                 println(
                                     "Código de estado: $errorCode, Cuerpo de la respuesta: $apiResponse"
@@ -455,6 +464,7 @@ fun RoomDetail(
                             selectedImageUri,
                             context
                         ) { apiResponse, errorCode, errorBody ->
+                            isLoading.value = false
                             if (apiResponse != null) {
                                 println(
                                     "Código de estado: $errorCode, Cuerpo de la respuesta: $apiResponse"
@@ -529,6 +539,7 @@ fun RoomDetail(
                 Text(text = "Cancelar")
             }
             MessageError(errorMessageModel, "Espera!")
+                Loader(isLoading = isLoading)
 
 
             }    // Otros campos de texto con etiquetas similares

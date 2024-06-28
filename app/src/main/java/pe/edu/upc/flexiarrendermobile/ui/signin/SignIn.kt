@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import pe.edu.upc.flexiarrendermobile.factories.ArrenderRepositoryFactory
 import pe.edu.upc.flexiarrendermobile.model.data.RequestSignInArrenderBody
 import pe.edu.upc.flexiarrendermobile.model.data.RequestSignInArrenderState
+import pe.edu.upc.flexiarrendermobile.shared.Loader
 import pe.edu.upc.flexiarrendermobile.shared.MessageError
 
 @Composable
@@ -43,7 +44,8 @@ fun SignIn(
     errorMessageModel: MutableState<String?>,
     sinUpFirstStep: () -> Unit,
     signInSuccessful: () -> Unit,
-    logoutEvent: MutableState<Boolean>
+    logoutEvent: MutableState<Boolean>,
+    isLoading: MutableState<Boolean>
 ) {
 
     val email = remember{
@@ -55,6 +57,7 @@ fun SignIn(
     }
 
     val requestSignInArrenderState= RequestSignInArrenderState()
+
 
     Scaffold {paddingValues->
         Box(
@@ -147,6 +150,8 @@ fun SignIn(
                                 return@Button
                             }
 
+                            isLoading.value = true
+
                             //caso contrario, mapear el state a body
                             val body= RequestSignInArrenderBody(
                                 email = requestSignInArrenderState.email.value,
@@ -157,6 +162,10 @@ fun SignIn(
 
 
                             arrenderRepository.signInArrender(body){apiResponse, errorCode, errorBody ->
+
+                                isLoading.value = false
+
+
                                 if (apiResponse != null) {
 
                                     //arrenderRepository.insertArrenderDataLocal()
@@ -170,14 +179,7 @@ fun SignIn(
                                         "ArrenderEntity: $arrenderEntity"
                                     )
 
-                                    //Guardar la data en la base de datos local
-                                    //arrenderRepository.insertArrenderDataLocal(
-                                    //     arrenderEntity
-                                    //)
-                                    //verificar que no haya un arrender en la base de datos local
-                                    //si no hay, guardar el arrender en la base de datos local
-                                    
-                                    
+
                                     //Limpiar la base de datos antes de guardar el arrender
                                     arrenderRepository.deleteAllArrenderDataLocal()
                                     
@@ -226,15 +228,18 @@ fun SignIn(
                             Text(text = "¿No tienes cuenta?",style=TextStyle(color = Color(0xFF846CD9)))
                             Text(
                                 text = "Registrate",
-                                modifier = Modifier.padding(horizontal = 3.dp).clickable {
-                                    sinUpFirstStep()
-                                },
+                                modifier = Modifier
+                                    .padding(horizontal = 3.dp)
+                                    .clickable {
+                                        sinUpFirstStep()
+                                    },
                                 style = TextStyle(textDecoration = TextDecoration.Underline, fontSize = 15.sp, color = Color(0xFF846CD9))
                             )
                         }
 
 
                     MessageError(errorMessageModel, "Espera un momento!")
+                    Loader(isLoading = isLoading)
 
                 }
             }

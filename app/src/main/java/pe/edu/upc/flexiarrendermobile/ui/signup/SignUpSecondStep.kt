@@ -1,6 +1,5 @@
 package pe.edu.upc.flexiarrendermobile.ui.signup
 
-import android.graphics.Paint.Style
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -39,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import pe.edu.upc.flexiarrendermobile.factories.ArrenderRepositoryFactory
 import pe.edu.upc.flexiarrendermobile.model.data.RequestSignUpArrenderBody
 import pe.edu.upc.flexiarrendermobile.model.data.RequestSignUpArrenderState
+import pe.edu.upc.flexiarrendermobile.shared.Loader
 import pe.edu.upc.flexiarrendermobile.shared.MessageError
 import pe.edu.upc.flexiarrendermobile.ui.theme.FlexiArrenderMobileTheme
 import java.util.Calendar
@@ -59,8 +58,9 @@ import java.util.TimeZone
 fun SignUpSecondStep(
     requestSignUpArrenderState: RequestSignUpArrenderState,
     errorMessageModel: MutableState<String?>,
-    pressOnBack:()->Unit,
-    navigationToSignIn:()->Unit,
+    pressOnBack: () -> Unit,
+    navigationToSignIn: () -> Unit,
+    isLoading: MutableState<Boolean>,
     ){
 
     //Valores para el DatePicker
@@ -205,7 +205,9 @@ fun SignUpSecondStep(
                                 Spacer(modifier = Modifier.height(3.dp))
 
                                 Button(
-                                    modifier=Modifier.height(45.dp).padding(0.dp),
+                                    modifier= Modifier
+                                        .height(45.dp)
+                                        .padding(0.dp),
                                     shape= RoundedCornerShape(20.dp),
                                     colors= ButtonDefaults.buttonColors(contentColor =Color.White, containerColor = Color(0xFF846CD9)),
                                     onClick = {
@@ -270,7 +272,10 @@ fun SignUpSecondStep(
                                 ExposedDropdownMenuBox(
                                     expanded = isExpanded.value,
                                     onExpandedChange ={isExpanded.value=it},
-                                   modifier= Modifier.width(145.dp).height(52.dp).padding(3.dp)
+                                   modifier= Modifier
+                                       .width(145.dp)
+                                       .height(52.dp)
+                                       .padding(3.dp)
                                 ) {
                                     TextField(
                                         value = selectedOption.value,
@@ -319,6 +324,9 @@ fun SignUpSecondStep(
 
                         Button(colors=ButtonDefaults.buttonColors(contentColor =Color.White, containerColor = Color(0xFF846CD9)),
                             onClick = {
+
+                                isLoading.value=true
+
                             //Validar que todos los campos esten llenos
                             if (
                                 requestSignUpArrenderState.firstname.value.isEmpty() ||
@@ -358,6 +366,7 @@ fun SignUpSecondStep(
                             val arrenderRepository= ArrenderRepositoryFactory.getArrenderRepository("")
 
                             arrenderRepository.signUpArrender(body) { apiResponse, errorCode, errorBody ->
+                                isLoading.value=false
                                 // Manejar la respuesta exitosa o el error aquí
                                 if (apiResponse != null) {
                                     dialogTitle.value="En hora buena!"
@@ -391,6 +400,8 @@ fun SignUpSecondStep(
 
                         MessageError(errorMessageModel, dialogTitle.value)
 
+                        Loader(isLoading =isLoading);
+
 
                 }
 
@@ -402,15 +413,3 @@ fun SignUpSecondStep(
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SignUpSecondStepPreview() {
-    FlexiArrenderMobileTheme {
-        SignUpSecondStep(
-            requestSignUpArrenderState = RequestSignUpArrenderState(),
-            errorMessageModel = mutableStateOf(null),
-            pressOnBack = {},
-            navigationToSignIn = {}
-        )
-    }
-}

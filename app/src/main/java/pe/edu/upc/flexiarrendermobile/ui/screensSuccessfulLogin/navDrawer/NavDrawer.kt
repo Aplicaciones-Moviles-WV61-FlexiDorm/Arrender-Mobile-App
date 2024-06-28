@@ -49,12 +49,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import pe.edu.upc.flexiarrendermobile.factories.ArrenderRepositoryFactory
-import pe.edu.upc.flexiarrendermobile.model.data.RegisterRoomState
+import pe.edu.upc.flexiarrendermobile.model.data.ReservationState
 import pe.edu.upc.flexiarrendermobile.model.data.RoomUpdateState
 import pe.edu.upc.flexiarrendermobile.shared.routes.Routes
 import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.profile.Profile
 import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.profile.UpdateProfile
-import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.reservations.Reservation
+import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.reservations.reservationdetail.ReservationDetail
+import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.reservations.reservationlist.ReservationList
 import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.room.roomdetail.RoomDetail
 import pe.edu.upc.flexiarrendermobile.ui.screensSuccessfulLogin.room.roomlist.RoomList
 
@@ -69,8 +70,14 @@ fun NavDrawer(logoutEvent: MutableState<Boolean>) {
     val navController = rememberNavController()
 
     val errorMessage = remember { mutableStateOf<String?>(null) }
+    val isLoading = remember { mutableStateOf(false) }
 
     val roomNewOrSelected= RoomUpdateState()
+
+    // Variable para guardar la reserva seleccionada, es un objecto
+
+    val reservationSelected = ReservationState()
+
 
     val selectedItem = remember { mutableStateOf("Mis habitaciones") }
 
@@ -137,7 +144,7 @@ fun NavDrawer(logoutEvent: MutableState<Boolean>) {
                         onItemClick = {
                             selectedItem.value = "Mis reservas"
                             coroutineScope.launch { drawerState.close() }
-                            navController.navigate(Routes.Reservation.route) { popUpTo(0) }
+                            navController.navigate(Routes.ReservationList.route) { popUpTo(0) }
                         }
                     )
 
@@ -203,7 +210,8 @@ fun NavDrawer(logoutEvent: MutableState<Boolean>) {
                     RoomDetail(
                         errorMessageModel = errorMessage,
                         roomNewOrSelected=  roomNewOrSelected,
-                        finishAddRoom = { navController.popBackStack() }
+                        finishAddRoom = { navController.popBackStack() },
+                        isLoading = isLoading
                     )
                 }
 
@@ -219,8 +227,16 @@ fun NavDrawer(logoutEvent: MutableState<Boolean>) {
                     )
                 }
 
-                composable(Routes.Reservation.route) {
-                    Reservation()
+                composable(Routes.ReservationList.route) {
+                    ReservationList(
+                        reservationSelected = reservationSelected
+                    ) { navController.navigate(Routes.ReservationDetail.route) }
+                }
+
+                composable(Routes.ReservationDetail.route) {
+                    ReservationDetail(
+                        reservation = reservationSelected
+                    ) { navController.popBackStack() }
                 }
             }
         }

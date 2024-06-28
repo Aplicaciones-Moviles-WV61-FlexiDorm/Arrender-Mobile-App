@@ -27,7 +27,9 @@ fun Home(){
 
     val errorMessage = remember { mutableStateOf<String?>(null) }
 
-// Estado para el evento de cerrar sesión
+    val isLoading = remember { mutableStateOf(false) }
+
+    // Estado para el evento de cerrar sesión
     val logoutEvent = remember { mutableStateOf(false) }
 
     // Navega al SignIn cuando se activa el evento de cerrar sesión
@@ -62,7 +64,8 @@ fun Home(){
                 navController.popBackStack() },
                 navigationToSignIn={
                     navController.navigate(Routes.SignIn.route)
-                }
+                },
+                isLoading
 
             )
         }
@@ -76,7 +79,8 @@ fun Home(){
                 signInSuccessful={
                     navController.navigate(Routes.NavDrawer.route)
                 },
-                logoutEvent
+                logoutEvent,
+                isLoading
             )
         }
 

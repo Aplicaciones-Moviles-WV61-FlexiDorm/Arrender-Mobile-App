@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -26,9 +27,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -42,7 +45,6 @@ import pe.edu.upc.flexiarrendermobile.model.data.Room
 import pe.edu.upc.flexiarrendermobile.model.data.RoomUpdateState
 import pe.edu.upc.flexiarrendermobile.ui.theme.FlexiArrenderMobileTheme
 
-
 @Composable
 fun RoomList(roomDetail: () -> Unit, roomNewOrSelected: RoomUpdateState) {
 
@@ -50,20 +52,20 @@ fun RoomList(roomDetail: () -> Unit, roomNewOrSelected: RoomUpdateState) {
         mutableStateOf(listOf<Room>())
     }
 
-
     Scaffold(
         containerColor = Color.White,
         floatingActionButton = {
-        FloatingActionButton(
-            containerColor = Color(0xFF846CD9),
-            contentColor = Color.White,
-            onClick = {
-            // Navegar a la pantalla de detalle de la habitación
-                roomDetail()
-        }) {
-            Icon(Icons.Filled.Add, "Nueva habitación")
+            FloatingActionButton(
+                containerColor = Color(0xFF6C63FF),
+                contentColor = Color.White,
+                onClick = {
+                    roomDetail()
+                }
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "Nueva habitación")
+            }
         }
-    }) {
+    ) {
         Column(
             modifier = Modifier
                 .padding(it)
@@ -75,44 +77,34 @@ fun RoomList(roomDetail: () -> Unit, roomNewOrSelected: RoomUpdateState) {
             val arrenderRepository = ArrenderRepositoryFactory.getArrenderRepository("")
             val dataLocalArrender = arrenderRepository.getArrender()
 
-            //imirpimrla dataLocalArrender
             println("dataLocalArrender: $dataLocalArrender")
-            // Mostrar la lista de habitaciones
-            var roomListByArrender =
+
+            val roomListByArrender =
                 RoomRepositoryFactory.getRoomRepositoryFactory(dataLocalArrender[0].token)
-
             roomListByArrender.getRoomsById(dataLocalArrender[0].id.toLong()) { apiResponseRoom, errorCode, status ->
-
                 if (apiResponseRoom != null) {
                     println("apiResponseRoom: $apiResponseRoom")
                     roomList.value = apiResponseRoom.data
                 } else {
-                    // Mostrar mensaje de error
-
                     println("error: $status")
                 }
             }
-            if(roomList.value.isEmpty()){
-                //empujar el texto hacia el centro
-                Spacer(modifier = Modifier.height(300.dp))
 
+            if (roomList.value.isEmpty()) {
+                Spacer(modifier = Modifier.height(300.dp))
                 Text(
                     text = "Actualmente no tienes habitaciones registradas",
-                    style= TextStyle( color = Color(0xFF846CD9), fontSize = 20.sp),
-                    modifier=Modifier.padding(10.dp),
+                    style = TextStyle(color = Color(0xFF6C63FF), fontSize = 20.sp),
+                    modifier = Modifier.padding(10.dp),
                     textAlign = TextAlign.Center,
                     fontSize = 17.sp
                 )
-            }else{
+            } else {
                 RoomListByArrender(roomList, roomNewOrSelected, roomDetail)
             }
-
         }
-
     }
-
 }
-
 
 @Composable
 fun RoomListByArrender(
@@ -120,45 +112,51 @@ fun RoomListByArrender(
     roomNewOrSelected: RoomUpdateState,
     roomDetail: () -> Unit
 ) {
-
-
-    // Mostrar la lista de habitaciones
     LazyColumn {
         items(roomListByArrender.value) { room ->
-
-
             Card(
                 modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .fillMaxHeight(0.5f)
-                    .padding(8.dp),
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF846CD9), //Color de fondo de la tarjeta
-                )
+                    containerColor = Color.White,
+                ),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(8.dp)
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(
                         modifier = Modifier
-                            .height(120.dp) // Altura definida para el contenedor de la imagen
+                            .height(150.dp)
                             .fillMaxWidth()
-                            .padding(bottom = 4.dp)
+                            .clip(RoundedCornerShape(16.dp))
                     ) {
-                        roomImage(url = room.imageUrl, size = 250.dp)
+                        roomImage(url = room.imageUrl, size = 150.dp)
                     }
-                    Text(text = room.title, style = TextStyle(color = Color.White), modifier = Modifier.padding(4.dp))
-                    Text(text = "S/." + room.price.toString() + " x hora - "+ room.nearUniversities, style = TextStyle(color = Color.White), modifier = Modifier.padding(4.dp))
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = room.title,
+                        style = TextStyle(color = Color(0xFF6C63FF), fontSize = 18.sp, fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                    )
+
+                    Text(
+                        text = "S/. ${room.price} x hora - ${room.nearUniversities}",
+                        style = TextStyle(color = Color.Gray),
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
                     Button(
                         colors = ButtonDefaults.buttonColors(
-                            contentColor = Color(0xFF846CD9),
+                            contentColor = Color(0xFF6C63FF),
                             containerColor = Color.White
                         ),
-                        modifier = Modifier.padding(),
                         onClick = {
-                            // Navegar a la pantalla de detalle de la habitación junto con la información de la habitación
-
                             roomNewOrSelected.roomId.value = room.roomId
                             roomNewOrSelected.title.value = room.title
                             roomNewOrSelected.description.value = room.description
@@ -169,12 +167,7 @@ fun RoomListByArrender(
                             roomNewOrSelected.latitude.value = room.latitude
                             roomNewOrSelected.longitude.value = room.longitude
                             roomNewOrSelected.imageUrl.value = room.imageUrl
-
                             roomDetail()
-
-
-
-
                         }
                     ) {
                         Text(text = "Editar")
@@ -185,23 +178,15 @@ fun RoomListByArrender(
     }
 }
 
-
-
 @Composable
-fun roomImage(url: String, size: Dp){
+fun roomImage(url: String, size: Dp) {
     GlideImage(
-
-
-        imageModel={url},
-        imageOptions= ImageOptions(contentScale= ContentScale.Crop),
-        modifier=Modifier.fillMaxWidth(),
+        imageModel = { url },
+        imageOptions = ImageOptions(contentScale = ContentScale.Crop),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(size)
+            .clip(RoundedCornerShape(16.dp))
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun roomImagePreview() {
-    FlexiArrenderMobileTheme {
-        roomImage(url = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png", size = 120.dp)
-    }
-}

@@ -16,6 +16,8 @@ sealed class Routes(val route:String){
 
     data object UpdateProfile: Routes("UpdateProfile")
 
-    data object Reservation: Routes("Reservation")
+    data object ReservationList: Routes("ReservationList")
+
+    data object ReservationDetail: Routes("ReservationDetail")
 
 }
